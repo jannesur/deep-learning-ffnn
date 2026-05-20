@@ -51,7 +51,49 @@ const trainingData = dataset.slice(0, DATASET_SIZE / 2);
 const testData = dataset.slice(DATASET_SIZE / 2);
 
 console.log("Training Data:", trainingData);
+
 console.log("Test Data:", testData);
+
+
+// Gaussian Noise erzeugen
+
+function generateGaussianNoise(mean = 0, variance = 0.05) {
+
+    const standardDeviation = Math.sqrt(variance);
+
+    const randomValue1 = Math.random();
+
+    const randomValue2 = Math.random();
+
+    const randomNormalValue =
+        Math.sqrt(-2 * Math.log(randomValue1)) *
+        Math.cos(2 * Math.PI * randomValue2);
+
+    return mean + standardDeviation * randomNormalValue;
+}
+
+
+// Trainingsdaten und Testdaten künstlich verrauschen
+
+const noisyTrainingData = trainingData.map(point => {
+
+    return {
+        x: point.x,
+        y: point.y + generateGaussianNoise()
+    };
+});
+
+const noisyTestData = testData.map(point => {
+
+    return {
+        x: point.x,
+        y: point.y + generateGaussianNoise()
+    };
+});
+
+console.log("Noisy Training Data:", noisyTrainingData);
+
+console.log("Noisy Test Data:", noisyTestData);
 
 
 // Datensatz mit Plotly visualisieren
