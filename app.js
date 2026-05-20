@@ -41,3 +41,22 @@ for (const x of xValues) {
 }
 
 console.log(dataset);
+
+// Datensatz mit Plotly visualisieren
+Plotly.newPlot("dataset-plot", [
+    {
+        x: dataset.map(point => point.x),
+        y: dataset.map(point => point.y),
+        mode: "markers",
+        type: "scatter",
+        name: "Datenpunkte"
+    }
+], {
+    title: "Unverrauschter Datensatz",
+    xaxis: {
+        title: "x"
+    },
+    yaxis: {
+        title: "y"
+    }
+});
