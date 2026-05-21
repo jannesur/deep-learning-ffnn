@@ -96,7 +96,7 @@ console.log("Noisy Training Data:", noisyTrainingData);
 console.log("Noisy Test Data:", noisyTestData);
 
 
-// Datensatz mit Plotly visualisieren
+// Unverrauschten Datensatz mit Plotly visualisieren
 
 Plotly.newPlot("dataset-plot", [
 
@@ -123,6 +123,45 @@ Plotly.newPlot("dataset-plot", [
 ], {
 
     title: "Unverrauschter Datensatz",
+
+    xaxis: {
+        title: "x"
+    },
+
+    yaxis: {
+        title: "y"
+    }
+
+});
+
+
+// Verrauschten Datensatz mit Plotly visualisieren
+
+Plotly.newPlot("noisy-dataset-plot", [
+
+    {
+        x: noisyTrainingData.map(point => point.x),
+        y: noisyTrainingData.map(point => point.y),
+
+        mode: "markers",
+        type: "scatter",
+
+        name: "Trainingsdaten"
+    },
+
+    {
+        x: noisyTestData.map(point => point.x),
+        y: noisyTestData.map(point => point.y),
+
+        mode: "markers",
+        type: "scatter",
+
+        name: "Testdaten"
+    }
+
+], {
+
+    title: "Verrauschter Datensatz",
 
     xaxis: {
         title: "x"

@@ -8,10 +8,8 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <!-- TensorFlow.js -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 
-    <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
@@ -22,10 +20,27 @@
 </header>
 
 <main>
+
     <section>
-        <h2>Datensatz ohne Rauschen</h2>
-        <div id="dataset-plot"></div>
+
+        <h2>R1 - Datensätze</h2>
+
+        <div class="plot-grid">
+
+            <div>
+                <h3>Ohne Rauschen</h3>
+                <div id="dataset-plot"></div>
+            </div>
+
+            <div>
+                <h3>Mit Rauschen</h3>
+                <div id="noisy-dataset-plot"></div>
+            </div>
+
+        </div>
+
     </section>
+
 </main>
 
 <script src="app.js"></script>
