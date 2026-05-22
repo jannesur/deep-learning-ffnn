@@ -96,6 +96,65 @@ console.log("Noisy Training Data:", noisyTrainingData);
 console.log("Noisy Test Data:", noisyTestData);
 
 
+// Trainingsdaten für TensorFlow vorbereiten
+
+const trainingInputs = tf.tensor2d(
+    noisyTrainingData.map(point => [point.x])
+);
+
+const trainingLabels = tf.tensor2d(
+    noisyTrainingData.map(point => [point.y])
+);
+
+console.log(trainingInputs);
+
+console.log(trainingLabels);
+
+
+// Feed-Forward Neural Network erstellen
+
+const model = tf.sequential();
+
+model.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu",
+
+    inputShape: [1]
+
+}));
+
+model.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu"
+
+}));
+
+model.add(tf.layers.dense({
+
+    units: 1,
+
+    activation: "linear"
+
+}));
+
+
+// Modell konfigurieren
+
+model.compile({
+
+    optimizer: tf.train.adam(0.01),
+
+    loss: "meanSquaredError"
+
+});
+
+console.log(model);
+
+
 // Unverrauschten Datensatz mit Plotly visualisieren
 
 Plotly.newPlot("dataset-plot", [
