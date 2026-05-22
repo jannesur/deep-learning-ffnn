@@ -155,6 +155,29 @@ model.compile({
 console.log(model);
 
 
+// Modell trainieren
+
+async function trainModel() {
+
+    await model.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 100,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+    console.log("Training abgeschlossen");
+}
+
+trainModel();
+
+
 // Unverrauschten Datensatz mit Plotly visualisieren
 
 Plotly.newPlot("dataset-plot", [
