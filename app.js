@@ -182,6 +182,52 @@ async function trainModel() {
     console.log("Training Predictions:");
 
     trainingPredictions.print();
+
+
+    // Vorhersagen visualisieren
+
+    const predictionValues = await trainingPredictions.array();
+
+    Plotly.newPlot("prediction-plot", [
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: noisyTrainingData.map(point => point.y),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Trainingsdaten"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: predictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Vorhersage"
+        }
+
+    ], {
+
+        title: "Erste Vorhersage des trainierten Modells",
+
+        xaxis: {
+            title: "x"
+        },
+
+        yaxis: {
+            title: "y"
+        }
+
+    });
+
 }
 
 trainModel();
