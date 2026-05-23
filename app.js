@@ -173,6 +173,15 @@ async function trainModel() {
     );
 
     console.log("Training abgeschlossen");
+
+
+    // Vorhersagen mit dem trainierten Modell erzeugen
+
+    const trainingPredictions = model.predict(trainingInputs);
+
+    console.log("Training Predictions:");
+
+    trainingPredictions.print();
 }
 
 trainModel();
