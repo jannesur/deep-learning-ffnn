@@ -96,7 +96,7 @@ console.log("Noisy Training Data:", noisyTrainingData);
 console.log("Noisy Test Data:", noisyTestData);
 
 
-// Trainingsdaten für TensorFlow vorbereiten
+// Trainings- und Testdaten für TensorFlow vorbereiten
 
 const trainingInputs = tf.tensor2d(
     noisyTrainingData.map(point => [point.x])
@@ -106,9 +106,21 @@ const trainingLabels = tf.tensor2d(
     noisyTrainingData.map(point => [point.y])
 );
 
+const testInputs = tf.tensor2d(
+    noisyTestData.map(point => [point.x])
+);
+
+const testLabels = tf.tensor2d(
+    noisyTestData.map(point => [point.y])
+);
+
 console.log(trainingInputs);
 
 console.log(trainingLabels);
+
+console.log(testInputs);
+
+console.log(testLabels);
 
 
 // Feed-Forward Neural Network erstellen
