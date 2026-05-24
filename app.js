@@ -240,6 +240,21 @@ async function trainModel() {
 
     });
 
+
+    // Trainings- und Test-Loss berechnen
+
+    const trainLossTensor = model.evaluate(trainingInputs, trainingLabels);
+
+    const testLossTensor = model.evaluate(testInputs, testLabels);
+
+    const trainLoss = trainLossTensor.dataSync()[0];
+
+    const testLoss = testLossTensor.dataSync()[0];
+
+    console.log("Train Loss:", trainLoss);
+
+    console.log("Test Loss:", testLoss);
+
 }
 
 trainModel();
