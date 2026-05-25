@@ -167,6 +167,47 @@ model.compile({
 console.log(model);
 
 
+// Best-Fit Modell erstellen
+
+const bestFitModel = tf.sequential();
+
+bestFitModel.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu",
+
+    inputShape: [1]
+
+}));
+
+bestFitModel.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu"
+
+}));
+
+bestFitModel.add(tf.layers.dense({
+
+    units: 1,
+
+    activation: "linear"
+
+}));
+
+bestFitModel.compile({
+
+    optimizer: tf.train.adam(0.01),
+
+    loss: "meanSquaredError"
+
+});
+
+console.log(bestFitModel);
+
+
 // Modell trainieren
 
 async function trainModel() {
@@ -185,6 +226,24 @@ async function trainModel() {
     );
 
     console.log("Training abgeschlossen");
+
+
+    // Best-Fit Modell trainieren
+
+    await bestFitModel.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 50,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+    console.log("Best-Fit Modell trainiert");
 
 
     // Vorhersagen mit dem trainierten Modell erzeugen
