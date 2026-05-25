@@ -208,6 +208,47 @@ bestFitModel.compile({
 console.log(bestFitModel);
 
 
+// Overfit Modell erstellen
+
+const overfitModel = tf.sequential();
+
+overfitModel.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu",
+
+    inputShape: [1]
+
+}));
+
+overfitModel.add(tf.layers.dense({
+
+    units: 100,
+
+    activation: "relu"
+
+}));
+
+overfitModel.add(tf.layers.dense({
+
+    units: 1,
+
+    activation: "linear"
+
+}));
+
+overfitModel.compile({
+
+    optimizer: tf.train.adam(0.01),
+
+    loss: "meanSquaredError"
+
+});
+
+console.log(overfitModel);
+
+
 // Modell trainieren
 
 async function trainModel() {
@@ -244,6 +285,24 @@ async function trainModel() {
     );
 
     console.log("Best-Fit Modell trainiert");
+
+
+    // Overfit Modell trainieren
+
+    await overfitModel.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 150,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+    console.log("Overfit Modell trainiert");
 
 
     // Vorhersagen mit dem trainierten Modell erzeugen
