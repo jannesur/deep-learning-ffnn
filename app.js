@@ -305,18 +305,19 @@ async function trainModel() {
     console.log("Overfit Modell trainiert");
 
 
-    // Vorhersagen mit dem trainierten Modell erzeugen
+    // Modellvorhersagen visualisieren
 
-    const trainingPredictions = model.predict(trainingInputs);
+    const modelPredictions = model.predict(trainingInputs);
 
-    console.log("Training Predictions:");
+    const bestFitPredictions = bestFitModel.predict(trainingInputs);
 
-    trainingPredictions.print();
+    const overfitPredictions = overfitModel.predict(trainingInputs);
 
+    const modelPredictionValues = await modelPredictions.array();
 
-    // Vorhersagen visualisieren
+    const bestFitPredictionValues = await bestFitPredictions.array();
 
-    const predictionValues = await trainingPredictions.array();
+    const overfitPredictionValues = await overfitPredictions.array();
 
     Plotly.newPlot("prediction-plot", [
 
@@ -335,18 +336,42 @@ async function trainModel() {
         {
             x: noisyTrainingData.map(point => point.x),
 
-            y: predictionValues.map(value => value[0]),
+            y: modelPredictionValues.map(value => value[0]),
 
             mode: "markers",
 
             type: "scatter",
 
-            name: "Vorhersage"
+            name: "Normales Modell"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: bestFitPredictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Best-Fit Modell"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: overfitPredictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Overfit Modell"
         }
 
     ], {
 
-        title: "Erste Vorhersage des trainierten Modells",
+        title: "Vergleich der Modellvorhersagen",
 
         xaxis: {
             title: "x"
