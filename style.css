@@ -26,3 +26,12 @@ main {
     height: 500px;
     background: white;
 }
+
+#loss-output {
+
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: white;
+}

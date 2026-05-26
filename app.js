@@ -398,6 +398,15 @@ async function trainModel() {
 
     console.log("Test Loss:", testLoss);
 
+
+    // Loss-Werte im UI anzeigen
+
+    document.getElementById("train-loss").textContent =
+        trainLoss.toFixed(6);
+
+    document.getElementById("test-loss").textContent =
+        testLoss.toFixed(6);
+
 }
 
 trainModel();
