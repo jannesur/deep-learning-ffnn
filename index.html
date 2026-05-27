@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 
@@ -44,17 +43,54 @@
 
     <section>
 
+        <h2>R2 - Modell ohne Rauschen</h2>
+
+        <div class="plot-grid">
+
+            <div>
+                <h3>Trainingsdaten</h3>
+                <div id="clean-train-prediction-plot"></div>
+            </div>
+
+            <div>
+                <h3>Testdaten</h3>
+                <div id="clean-test-prediction-plot"></div>
+            </div>
+
+        </div>
+
+        <div id="clean-loss-output">
+
+            <p>
+                Clean Train Loss:
+                <span id="clean-train-loss">-</span>
+            </p>
+
+            <p>
+                Clean Test Loss:
+                <span id="clean-test-loss">-</span>
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section>
+
         <h2>Vergleich der Modellvorhersagen</h2>
 
         <div id="prediction-plot"></div>
 
         <div id="loss-output">
 
-            <p>Train Loss:
+            <p>
+                Train Loss:
                 <span id="train-loss">-</span>
             </p>
 
-            <p>Test Loss:
+            <p>
+                Test Loss:
                 <span id="test-loss">-</span>
             </p>
 
