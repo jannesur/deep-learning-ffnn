@@ -418,6 +418,160 @@ async function trainModel() {
     document.getElementById("clean-test-loss").textContent =
         cleanTestLoss.toFixed(6);
 
+
+    // Normales Modell trainieren
+
+    await model.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 100,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+
+    // Best-Fit Modell trainieren
+
+    await bestFitModel.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 50,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+
+    // Overfit Modell trainieren
+
+    await overfitModel.fit(
+
+        trainingInputs,
+        trainingLabels,
+
+        {
+            epochs: 150,
+            batchSize: 32,
+            shuffle: true
+        }
+
+    );
+
+
+    // Modellvorhersagen visualisieren
+
+    const modelPredictions =
+        model.predict(trainingInputs);
+
+    const bestFitPredictions =
+        bestFitModel.predict(trainingInputs);
+
+    const overfitPredictions =
+        overfitModel.predict(trainingInputs);
+
+    const modelPredictionValues =
+        await modelPredictions.array();
+
+    const bestFitPredictionValues =
+        await bestFitPredictions.array();
+
+    const overfitPredictionValues =
+        await overfitPredictions.array();
+
+    Plotly.newPlot("prediction-plot", [
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: noisyTrainingData.map(point => point.y),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Trainingsdaten"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: modelPredictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Normales Modell"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: bestFitPredictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Best-Fit Modell"
+        },
+
+        {
+            x: noisyTrainingData.map(point => point.x),
+
+            y: overfitPredictionValues.map(value => value[0]),
+
+            mode: "markers",
+
+            type: "scatter",
+
+            name: "Overfit Modell"
+        }
+
+    ], {
+
+        title: "Vergleich der Modellvorhersagen",
+
+        xaxis: {
+            title: "x"
+        },
+
+        yaxis: {
+            title: "y"
+        }
+
+    });
+
+
+    // Trainings- und Test-Loss berechnen
+
+    const trainLossTensor =
+        model.evaluate(trainingInputs, trainingLabels);
+
+    const testLossTensor =
+        model.evaluate(testInputs, testLabels);
+
+    const trainLoss =
+        trainLossTensor.dataSync()[0];
+
+    const testLoss =
+        testLossTensor.dataSync()[0];
+
+    document.getElementById("train-loss").textContent =
+        trainLoss.toFixed(6);
+
+    document.getElementById("test-loss").textContent =
+        testLoss.toFixed(6);
+
 }
 
 trainModel();
