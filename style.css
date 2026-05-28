@@ -16,6 +16,11 @@ section {
     margin-bottom: 60px;
 }
 
+.training-status {
+    color: red;
+    font-weight: bold;
+}
+
 .plot-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -26,8 +31,8 @@ section {
 #noisy-dataset-plot,
 #clean-train-prediction-plot,
 #clean-test-prediction-plot,
-#best-fit-train-prediction-plot,
-#best-fit-test-prediction-plot,
+#bestfit-train-prediction-plot,
+#bestfit-test-prediction-plot,
 #overfit-train-prediction-plot,
 #overfit-test-prediction-plot {
     width: 100%;
@@ -35,8 +40,21 @@ section {
     background: white;
 }
 
-.loss-output {
+#clean-loss-output,
+#bestfit-loss-output,
+#overfit-loss-output {
     margin-top: 20px;
     padding: 16px;
     background: white;
+}
+
+.text-box {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    line-height: 1.6;
+}
+
+ul {
+    line-height: 1.8;
 }

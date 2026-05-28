@@ -21,9 +21,13 @@
 <main>
 
     <section>
+
         <h2>R1 - Datensätze</h2>
 
+        <p class="training-status">Modell wird trainiert...</p>
+
         <div class="plot-grid">
+
             <div>
                 <h3>Ohne Rauschen</h3>
                 <div id="dataset-plot"></div>
@@ -33,13 +37,20 @@
                 <h3>Mit Rauschen</h3>
                 <div id="noisy-dataset-plot"></div>
             </div>
+
         </div>
+
     </section>
 
+
     <section>
+
         <h2>R2 - Modell ohne Rauschen</h2>
 
+        <p class="training-status">Modell wird trainiert...</p>
+
         <div class="plot-grid">
+
             <div>
                 <h3>Trainingsdaten</h3>
                 <div id="clean-train-prediction-plot"></div>
@@ -49,39 +60,71 @@
                 <h3>Testdaten</h3>
                 <div id="clean-test-prediction-plot"></div>
             </div>
+
         </div>
 
-        <div class="loss-output">
-            <p>Clean Train Loss: <span id="clean-train-loss">-</span></p>
-            <p>Clean Test Loss: <span id="clean-test-loss">-</span></p>
+        <div id="clean-loss-output">
+
+            <p>
+                Clean Train Loss:
+                <span id="clean-train-loss">-</span>
+            </p>
+
+            <p>
+                Clean Test Loss:
+                <span id="clean-test-loss">-</span>
+            </p>
+
         </div>
+
     </section>
 
+
     <section>
+
         <h2>R3 - Best-Fit Modell</h2>
 
+        <p class="training-status">Modell wird trainiert...</p>
+
         <div class="plot-grid">
+
             <div>
                 <h3>Trainingsdaten</h3>
-                <div id="best-fit-train-prediction-plot"></div>
+                <div id="bestfit-train-prediction-plot"></div>
             </div>
 
             <div>
                 <h3>Testdaten</h3>
-                <div id="best-fit-test-prediction-plot"></div>
+                <div id="bestfit-test-prediction-plot"></div>
             </div>
+
         </div>
 
-        <div class="loss-output">
-            <p>Best-Fit Train Loss: <span id="best-fit-train-loss">-</span></p>
-            <p>Best-Fit Test Loss: <span id="best-fit-test-loss">-</span></p>
+        <div id="bestfit-loss-output">
+
+            <p>
+                Best-Fit Train Loss:
+                <span id="bestfit-train-loss">-</span>
+            </p>
+
+            <p>
+                Best-Fit Test Loss:
+                <span id="bestfit-test-loss">-</span>
+            </p>
+
         </div>
+
     </section>
 
+
     <section>
+
         <h2>R4 - Overfit Modell</h2>
 
+        <p class="training-status">Modell wird trainiert...</p>
+
         <div class="plot-grid">
+
             <div>
                 <h3>Trainingsdaten</h3>
                 <div id="overfit-train-prediction-plot"></div>
@@ -91,12 +134,124 @@
                 <h3>Testdaten</h3>
                 <div id="overfit-test-prediction-plot"></div>
             </div>
+
         </div>
 
-        <div class="loss-output">
-            <p>Overfit Train Loss: <span id="overfit-train-loss">-</span></p>
-            <p>Overfit Test Loss: <span id="overfit-test-loss">-</span></p>
+        <div id="overfit-loss-output">
+
+            <p>
+                Overfit Train Loss:
+                <span id="overfit-train-loss">-</span>
+            </p>
+
+            <p>
+                Overfit Test Loss:
+                <span id="overfit-test-loss">-</span>
+            </p>
+
         </div>
+
+    </section>
+
+
+    <section>
+
+        <h2>Diskussion</h2>
+
+        <div class="text-box">
+
+            <p>
+                Die Ergebnisse zeigen deutlich die Unterschiede zwischen
+                Lernen ohne Rauschen, Best-Fit und Overfitting bei neuronalen
+                Netzen. Das Clean-Modell erzielt die besten Ergebnisse, da
+                die Trainingsdaten kein künstliches Rauschen enthalten.
+                Dadurch folgen die Vorhersagen der ursprünglichen Funktion
+                nahezu exakt. Beim Best-Fit Modell wurde die Anzahl der
+                Trainings-Epochen reduziert, wodurch der allgemeine Verlauf
+                zwar erkannt wird, die Funktion jedoch weniger präzise
+                approximiert wird. Das Overfit Modell besitzt einen sehr
+                niedrigen Trainings-Loss und passt sich stark an die
+                verrauschten Trainingsdaten an. Dadurch lernt das Modell
+                auch zufällige Störungen und generalisiert schlechter auf
+                unbekannte Testdaten. Während der Implementierung wurde
+                deutlich, wie stark sich Trainingsdaten, künstliches
+                Rauschen und die Anzahl der Trainings-Epochen auf das
+                Verhalten neuronaler Netze auswirken.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <section>
+
+        <h2>Dokumentation</h2>
+
+        <div class="text-box">
+
+            <h3>1) Technisch</h3>
+
+            <ul>
+
+                <li>
+                    <strong>TensorFlow.js:</strong>
+                    Wird verwendet, um neuronale Netze direkt im Browser
+                    zu erstellen, zu trainieren und auszuwerten.
+                </li>
+
+                <li>
+                    <strong>Plotly.js:</strong>
+                    Wird zur Visualisierung von Trainingsdaten,
+                    Testdaten und Modellvorhersagen verwendet.
+                </li>
+
+                <li>
+                    <strong>HTML, CSS und JavaScript:</strong>
+                    Grundlage für Struktur, Gestaltung und Logik
+                    der Webanwendung.
+                </li>
+
+            </ul>
+
+            <p>
+                Die gesamte Anwendung läuft vollständig clientseitig
+                im Browser und benötigt keinen zusätzlichen Backend-Server.
+                Trainingsdaten, Testdaten und Vorhersagen werden direkt
+                im Browser berechnet und visualisiert.
+            </p>
+
+
+            <h3>2) Fachlich</h3>
+
+            <p>
+                Zunächst wurde ein Datensatz mithilfe einer mathematischen
+                Funktion erzeugt. Anschließend wurden Trainings- und
+                Testdaten erstellt sowie künstliches Gaußsches Rauschen
+                hinzugefügt. Danach wurden mehrere Feed-Forward Neural
+                Networks mit unterschiedlichen Trainingskonfigurationen
+                trainiert, um Lernen ohne Rauschen, Best-Fit und Overfitting
+                miteinander zu vergleichen.
+            </p>
+
+            <p>
+                Die Qualität der Modelle wurde mithilfe von Train-Loss,
+                Test-Loss und grafischen Vorhersagen analysiert.
+                Besonders das Overfit Modell zeigt deutlich, wie ein
+                neuronales Netz verrauschte Trainingsdaten lernen kann,
+                dadurch jedoch schlechter auf neue Daten generalisiert.
+            </p>
+
+            <p>
+                Verwendete Quellen:
+                <br>
+                https://www.tensorflow.org/js
+                <br>
+                https://plotly.com/javascript/
+            </p>
+
+        </div>
+
     </section>
 
 </main>

@@ -161,11 +161,34 @@ const bestFitModel = createModel();
 const overfitModel = createModel();
 
 
+// Hilfsfunktion: x-Werte für eine glatte Vorhersage-Kurve erzeugen
+
+function createCurveXValues() {
+
+    const curveXValues = [];
+
+    for (let i = 0; i <= 200; i++) {
+
+        const x = -2 + (4 * i / 200);
+
+        curveXValues.push(x);
+    }
+
+    return curveXValues;
+}
+
+
 // Plot-Funktion für Modellvorhersagen
 
-async function plotPredictions(plotId, inputData, originalData, model, title, dataName) {
+async function plotPredictions(plotId, originalData, model, title, dataName) {
 
-    const predictions = model.predict(inputData);
+    const curveXValues = createCurveXValues();
+
+    const curveInputs = tf.tensor2d(
+        curveXValues.map(x => [x])
+    );
+
+    const predictions = model.predict(curveInputs);
 
     const predictionValues = await predictions.array();
 
@@ -180,11 +203,11 @@ async function plotPredictions(plotId, inputData, originalData, model, title, da
         },
 
         {
-            x: originalData.map(point => point.x),
+            x: curveXValues,
             y: predictionValues.map(value => value[0]),
-            mode: "markers",
+            mode: "lines",
             type: "scatter",
-            name: "Vorhersage"
+            name: "Vorhersage-Kurve"
         }
 
     ], {
@@ -200,6 +223,9 @@ async function plotPredictions(plotId, inputData, originalData, model, title, da
         }
 
     });
+
+    curveInputs.dispose();
+    predictions.dispose();
 }
 
 
@@ -209,7 +235,101 @@ function calculateLoss(model, inputs, labels) {
 
     const lossTensor = model.evaluate(inputs, labels);
 
-    return lossTensor.dataSync()[0];
+    const lossValue = lossTensor.dataSync()[0];
+
+    lossTensor.dispose();
+
+    return lossValue;
+}
+
+
+// Modell trainieren und Loss-Verlauf speichern
+
+async function trainModelAndSaveLossHistory(model, inputs, labels, epochs) {
+
+    const lossHistory = [];
+
+    await model.fit(
+
+        inputs,
+        labels,
+
+        {
+            epochs: epochs,
+            batchSize: 32,
+            shuffle: true,
+
+            callbacks: {
+                onEpochEnd: function(epoch, logs) {
+
+                    lossHistory.push(logs.loss);
+                }
+            }
+        }
+
+    );
+
+    return lossHistory;
+}
+
+
+// Loss-Verlauf plotten
+
+function plotLossHistory(plotId, lossHistory, title) {
+
+    const epochNumbers = [];
+
+    for (let i = 0; i < lossHistory.length; i++) {
+
+        epochNumbers.push(i + 1);
+    }
+
+    Plotly.newPlot(plotId, [
+
+        {
+            x: epochNumbers,
+            y: lossHistory,
+            mode: "lines",
+            type: "scatter",
+            name: "Trainings-Loss"
+        }
+
+    ], {
+
+        title: title,
+
+        xaxis: {
+            title: "Epoch"
+        },
+
+        yaxis: {
+            title: "MSE"
+        }
+
+    });
+}
+
+
+// Kleine Hilfsfunktion: Loss-Plot-Div erstellen, falls es noch nicht existiert
+
+function createLossPlotDivIfNeeded(parentId, plotId) {
+
+    const parentElement = document.getElementById(parentId);
+
+    if (document.getElementById(plotId) === null) {
+
+        const lossPlotDiv = document.createElement("div");
+
+        lossPlotDiv.id = plotId;
+
+        lossPlotDiv.style.width = "100%";
+
+        lossPlotDiv.style.height = "350px";
+
+        lossPlotDiv.style.marginTop = "20px";
+
+        parentElement.appendChild(lossPlotDiv);
+    }
 }
 
 
@@ -219,49 +339,31 @@ async function trainModels() {
 
     // Modell ohne Rauschen trainieren
 
-    await cleanModel.fit(
-
+    const cleanLossHistory = await trainModelAndSaveLossHistory(
+        cleanModel,
         cleanTrainingInputs,
         cleanTrainingLabels,
-
-        {
-            epochs: 100,
-            batchSize: 32,
-            shuffle: true
-        }
-
+        300
     );
 
 
     // Best-Fit Modell trainieren
 
-    await bestFitModel.fit(
-
+    const bestFitLossHistory = await trainModelAndSaveLossHistory(
+        bestFitModel,
         trainingInputs,
         trainingLabels,
-
-        {
-            epochs: 50,
-            batchSize: 32,
-            shuffle: true
-        }
-
+        150
     );
 
 
     // Overfit Modell trainieren
 
-    await overfitModel.fit(
-
+    const overfitLossHistory = await trainModelAndSaveLossHistory(
+        overfitModel,
         trainingInputs,
         trainingLabels,
-
-        {
-            epochs: 150,
-            batchSize: 32,
-            shuffle: true
-        }
-
+        800
     );
 
 
@@ -269,7 +371,6 @@ async function trainModels() {
 
     await plotPredictions(
         "clean-train-prediction-plot",
-        cleanTrainingInputs,
         trainingData,
         cleanModel,
         "Clean Modell - Trainingsdaten",
@@ -278,7 +379,6 @@ async function trainModels() {
 
     await plotPredictions(
         "clean-test-prediction-plot",
-        cleanTestInputs,
         testData,
         cleanModel,
         "Clean Modell - Testdaten",
@@ -289,8 +389,7 @@ async function trainModels() {
     // R3 visualisieren
 
     await plotPredictions(
-        "best-fit-train-prediction-plot",
-        trainingInputs,
+        "bestfit-train-prediction-plot",
         noisyTrainingData,
         bestFitModel,
         "Best-Fit Modell - Trainingsdaten",
@@ -298,8 +397,7 @@ async function trainModels() {
     );
 
     await plotPredictions(
-        "best-fit-test-prediction-plot",
-        testInputs,
+        "bestfit-test-prediction-plot",
         noisyTestData,
         bestFitModel,
         "Best-Fit Modell - Testdaten",
@@ -311,7 +409,6 @@ async function trainModels() {
 
     await plotPredictions(
         "overfit-train-prediction-plot",
-        trainingInputs,
         noisyTrainingData,
         overfitModel,
         "Overfit Modell - Trainingsdaten",
@@ -320,7 +417,6 @@ async function trainModels() {
 
     await plotPredictions(
         "overfit-test-prediction-plot",
-        testInputs,
         noisyTestData,
         overfitModel,
         "Overfit Modell - Testdaten",
@@ -336,10 +432,10 @@ async function trainModels() {
     document.getElementById("clean-test-loss").textContent =
         calculateLoss(cleanModel, cleanTestInputs, cleanTestLabels).toFixed(6);
 
-    document.getElementById("best-fit-train-loss").textContent =
+    document.getElementById("bestfit-train-loss").textContent =
         calculateLoss(bestFitModel, trainingInputs, trainingLabels).toFixed(6);
 
-    document.getElementById("best-fit-test-loss").textContent =
+    document.getElementById("bestfit-test-loss").textContent =
         calculateLoss(bestFitModel, testInputs, testLabels).toFixed(6);
 
     document.getElementById("overfit-train-loss").textContent =
@@ -347,9 +443,42 @@ async function trainModels() {
 
     document.getElementById("overfit-test-loss").textContent =
         calculateLoss(overfitModel, testInputs, testLabels).toFixed(6);
-}
 
-trainModels();
+
+    // Loss-Verlauf zusätzlich visualisieren
+
+    createLossPlotDivIfNeeded("clean-loss-output", "clean-loss-plot");
+    createLossPlotDivIfNeeded("bestfit-loss-output", "bestfit-loss-plot");
+    createLossPlotDivIfNeeded("overfit-loss-output", "overfit-loss-plot");
+
+    plotLossHistory(
+        "clean-loss-plot",
+        cleanLossHistory,
+        "Loss-Verlauf Clean Modell"
+    );
+
+    plotLossHistory(
+        "bestfit-loss-plot",
+        bestFitLossHistory,
+        "Loss-Verlauf Best-Fit Modell"
+    );
+
+    plotLossHistory(
+        "overfit-loss-plot",
+        overfitLossHistory,
+        "Loss-Verlauf Overfit Modell"
+    );
+
+
+    // Rote Trainingshinweise ausblenden
+
+    const trainingStatusTexts = document.querySelectorAll(".training-status");
+
+    for (const trainingStatusText of trainingStatusTexts) {
+
+        trainingStatusText.style.display = "none";
+    }
+}
 
 
 // Unverrauschten Datensatz visualisieren
@@ -420,3 +549,8 @@ Plotly.newPlot("noisy-dataset-plot", [
     }
 
 });
+
+
+// Training starten
+
+trainModels();
