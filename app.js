@@ -123,165 +123,99 @@ const testLabels = tf.tensor2d(
 );
 
 
-// Modell ohne Rauschen erstellen
+// Modell erstellen
 
-const cleanModel = tf.sequential();
+function createModel() {
 
-cleanModel.add(tf.layers.dense({
+    const model = tf.sequential();
 
-    units: 100,
+    model.add(tf.layers.dense({
+        units: 100,
+        activation: "relu",
+        inputShape: [1]
+    }));
 
-    activation: "relu",
+    model.add(tf.layers.dense({
+        units: 100,
+        activation: "relu"
+    }));
 
-    inputShape: [1]
+    model.add(tf.layers.dense({
+        units: 1,
+        activation: "linear"
+    }));
 
-}));
+    model.compile({
+        optimizer: tf.train.adam(0.01),
+        loss: "meanSquaredError"
+    });
 
-cleanModel.add(tf.layers.dense({
+    return model;
+}
 
-    units: 100,
 
-    activation: "relu"
+const cleanModel = createModel();
 
-}));
+const bestFitModel = createModel();
 
-cleanModel.add(tf.layers.dense({
+const overfitModel = createModel();
 
-    units: 1,
 
-    activation: "linear"
+// Plot-Funktion für Modellvorhersagen
 
-}));
+async function plotPredictions(plotId, inputData, originalData, model, title, dataName) {
 
-cleanModel.compile({
+    const predictions = model.predict(inputData);
 
-    optimizer: tf.train.adam(0.01),
+    const predictionValues = await predictions.array();
 
-    loss: "meanSquaredError"
+    Plotly.newPlot(plotId, [
 
-});
+        {
+            x: originalData.map(point => point.x),
+            y: originalData.map(point => point.y),
+            mode: "markers",
+            type: "scatter",
+            name: dataName
+        },
 
+        {
+            x: originalData.map(point => point.x),
+            y: predictionValues.map(value => value[0]),
+            mode: "markers",
+            type: "scatter",
+            name: "Vorhersage"
+        }
 
-// Feed-Forward Neural Network erstellen
+    ], {
 
-const model = tf.sequential();
+        title: title,
 
-model.add(tf.layers.dense({
+        xaxis: {
+            title: "x"
+        },
 
-    units: 100,
+        yaxis: {
+            title: "y"
+        }
 
-    activation: "relu",
+    });
+}
 
-    inputShape: [1]
 
-}));
+// Loss berechnen
 
-model.add(tf.layers.dense({
+function calculateLoss(model, inputs, labels) {
 
-    units: 100,
+    const lossTensor = model.evaluate(inputs, labels);
 
-    activation: "relu"
-
-}));
-
-model.add(tf.layers.dense({
-
-    units: 1,
-
-    activation: "linear"
-
-}));
-
-model.compile({
-
-    optimizer: tf.train.adam(0.01),
-
-    loss: "meanSquaredError"
-
-});
-
-
-// Best-Fit Modell erstellen
-
-const bestFitModel = tf.sequential();
-
-bestFitModel.add(tf.layers.dense({
-
-    units: 100,
-
-    activation: "relu",
-
-    inputShape: [1]
-
-}));
-
-bestFitModel.add(tf.layers.dense({
-
-    units: 100,
-
-    activation: "relu"
-
-}));
-
-bestFitModel.add(tf.layers.dense({
-
-    units: 1,
-
-    activation: "linear"
-
-}));
-
-bestFitModel.compile({
-
-    optimizer: tf.train.adam(0.01),
-
-    loss: "meanSquaredError"
-
-});
-
-
-// Overfit Modell erstellen
-
-const overfitModel = tf.sequential();
-
-overfitModel.add(tf.layers.dense({
-
-    units: 100,
-
-    activation: "relu",
-
-    inputShape: [1]
-
-}));
-
-overfitModel.add(tf.layers.dense({
-
-    units: 100,
-
-    activation: "relu"
-
-}));
-
-overfitModel.add(tf.layers.dense({
-
-    units: 1,
-
-    activation: "linear"
-
-}));
-
-overfitModel.compile({
-
-    optimizer: tf.train.adam(0.01),
-
-    loss: "meanSquaredError"
-
-});
+    return lossTensor.dataSync()[0];
+}
 
 
 // Modelle trainieren
 
-async function trainModel() {
+async function trainModels() {
 
     // Modell ohne Rauschen trainieren
 
@@ -289,142 +223,6 @@ async function trainModel() {
 
         cleanTrainingInputs,
         cleanTrainingLabels,
-
-        {
-            epochs: 100,
-            batchSize: 32,
-            shuffle: true
-        }
-
-    );
-
-
-    // Clean Modell visualisieren
-
-    const cleanTrainPredictions =
-        cleanModel.predict(cleanTrainingInputs);
-
-    const cleanTestPredictions =
-        cleanModel.predict(cleanTestInputs);
-
-    const cleanTrainPredictionValues =
-        await cleanTrainPredictions.array();
-
-    const cleanTestPredictionValues =
-        await cleanTestPredictions.array();
-
-    Plotly.newPlot("clean-train-prediction-plot", [
-
-        {
-            x: trainingData.map(point => point.x),
-
-            y: trainingData.map(point => point.y),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Trainingsdaten"
-        },
-
-        {
-            x: trainingData.map(point => point.x),
-
-            y: cleanTrainPredictionValues.map(value => value[0]),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Vorhersage"
-        }
-
-    ], {
-
-        title: "Clean Modell - Trainingsdaten",
-
-        xaxis: {
-            title: "x"
-        },
-
-        yaxis: {
-            title: "y"
-        }
-
-    });
-
-    Plotly.newPlot("clean-test-prediction-plot", [
-
-        {
-            x: testData.map(point => point.x),
-
-            y: testData.map(point => point.y),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Testdaten"
-        },
-
-        {
-            x: testData.map(point => point.x),
-
-            y: cleanTestPredictionValues.map(value => value[0]),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Vorhersage"
-        }
-
-    ], {
-
-        title: "Clean Modell - Testdaten",
-
-        xaxis: {
-            title: "x"
-        },
-
-        yaxis: {
-            title: "y"
-        }
-
-    });
-
-
-    // Clean Loss berechnen
-
-    const cleanTrainLossTensor = cleanModel.evaluate(
-        cleanTrainingInputs,
-        cleanTrainingLabels
-    );
-
-    const cleanTestLossTensor = cleanModel.evaluate(
-        cleanTestInputs,
-        cleanTestLabels
-    );
-
-    const cleanTrainLoss =
-        cleanTrainLossTensor.dataSync()[0];
-
-    const cleanTestLoss =
-        cleanTestLossTensor.dataSync()[0];
-
-    document.getElementById("clean-train-loss").textContent =
-        cleanTrainLoss.toFixed(6);
-
-    document.getElementById("clean-test-loss").textContent =
-        cleanTestLoss.toFixed(6);
-
-
-    // Normales Modell trainieren
-
-    await model.fit(
-
-        trainingInputs,
-        trainingLabels,
 
         {
             epochs: 100,
@@ -467,114 +265,91 @@ async function trainModel() {
     );
 
 
-    // Modellvorhersagen visualisieren
+    // R2 visualisieren
 
-    const modelPredictions =
-        model.predict(trainingInputs);
+    await plotPredictions(
+        "clean-train-prediction-plot",
+        cleanTrainingInputs,
+        trainingData,
+        cleanModel,
+        "Clean Modell - Trainingsdaten",
+        "Trainingsdaten"
+    );
 
-    const bestFitPredictions =
-        bestFitModel.predict(trainingInputs);
-
-    const overfitPredictions =
-        overfitModel.predict(trainingInputs);
-
-    const modelPredictionValues =
-        await modelPredictions.array();
-
-    const bestFitPredictionValues =
-        await bestFitPredictions.array();
-
-    const overfitPredictionValues =
-        await overfitPredictions.array();
-
-    Plotly.newPlot("prediction-plot", [
-
-        {
-            x: noisyTrainingData.map(point => point.x),
-
-            y: noisyTrainingData.map(point => point.y),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Trainingsdaten"
-        },
-
-        {
-            x: noisyTrainingData.map(point => point.x),
-
-            y: modelPredictionValues.map(value => value[0]),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Normales Modell"
-        },
-
-        {
-            x: noisyTrainingData.map(point => point.x),
-
-            y: bestFitPredictionValues.map(value => value[0]),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Best-Fit Modell"
-        },
-
-        {
-            x: noisyTrainingData.map(point => point.x),
-
-            y: overfitPredictionValues.map(value => value[0]),
-
-            mode: "markers",
-
-            type: "scatter",
-
-            name: "Overfit Modell"
-        }
-
-    ], {
-
-        title: "Vergleich der Modellvorhersagen",
-
-        xaxis: {
-            title: "x"
-        },
-
-        yaxis: {
-            title: "y"
-        }
-
-    });
+    await plotPredictions(
+        "clean-test-prediction-plot",
+        cleanTestInputs,
+        testData,
+        cleanModel,
+        "Clean Modell - Testdaten",
+        "Testdaten"
+    );
 
 
-    // Trainings- und Test-Loss berechnen
+    // R3 visualisieren
 
-    const trainLossTensor =
-        model.evaluate(trainingInputs, trainingLabels);
+    await plotPredictions(
+        "best-fit-train-prediction-plot",
+        trainingInputs,
+        noisyTrainingData,
+        bestFitModel,
+        "Best-Fit Modell - Trainingsdaten",
+        "Trainingsdaten"
+    );
 
-    const testLossTensor =
-        model.evaluate(testInputs, testLabels);
+    await plotPredictions(
+        "best-fit-test-prediction-plot",
+        testInputs,
+        noisyTestData,
+        bestFitModel,
+        "Best-Fit Modell - Testdaten",
+        "Testdaten"
+    );
 
-    const trainLoss =
-        trainLossTensor.dataSync()[0];
 
-    const testLoss =
-        testLossTensor.dataSync()[0];
+    // R4 visualisieren
 
-    document.getElementById("train-loss").textContent =
-        trainLoss.toFixed(6);
+    await plotPredictions(
+        "overfit-train-prediction-plot",
+        trainingInputs,
+        noisyTrainingData,
+        overfitModel,
+        "Overfit Modell - Trainingsdaten",
+        "Trainingsdaten"
+    );
 
-    document.getElementById("test-loss").textContent =
-        testLoss.toFixed(6);
+    await plotPredictions(
+        "overfit-test-prediction-plot",
+        testInputs,
+        noisyTestData,
+        overfitModel,
+        "Overfit Modell - Testdaten",
+        "Testdaten"
+    );
 
+
+    // Loss-Werte anzeigen
+
+    document.getElementById("clean-train-loss").textContent =
+        calculateLoss(cleanModel, cleanTrainingInputs, cleanTrainingLabels).toFixed(6);
+
+    document.getElementById("clean-test-loss").textContent =
+        calculateLoss(cleanModel, cleanTestInputs, cleanTestLabels).toFixed(6);
+
+    document.getElementById("best-fit-train-loss").textContent =
+        calculateLoss(bestFitModel, trainingInputs, trainingLabels).toFixed(6);
+
+    document.getElementById("best-fit-test-loss").textContent =
+        calculateLoss(bestFitModel, testInputs, testLabels).toFixed(6);
+
+    document.getElementById("overfit-train-loss").textContent =
+        calculateLoss(overfitModel, trainingInputs, trainingLabels).toFixed(6);
+
+    document.getElementById("overfit-test-loss").textContent =
+        calculateLoss(overfitModel, testInputs, testLabels).toFixed(6);
 }
 
-trainModel();
+trainModels();
 
 
 // Unverrauschten Datensatz visualisieren
@@ -583,25 +358,17 @@ Plotly.newPlot("dataset-plot", [
 
     {
         x: trainingData.map(point => point.x),
-
         y: trainingData.map(point => point.y),
-
         mode: "markers",
-
         type: "scatter",
-
         name: "Trainingsdaten"
     },
 
     {
         x: testData.map(point => point.x),
-
         y: testData.map(point => point.y),
-
         mode: "markers",
-
         type: "scatter",
-
         name: "Testdaten"
     }
 
@@ -626,25 +393,17 @@ Plotly.newPlot("noisy-dataset-plot", [
 
     {
         x: noisyTrainingData.map(point => point.x),
-
         y: noisyTrainingData.map(point => point.y),
-
         mode: "markers",
-
         type: "scatter",
-
         name: "Trainingsdaten"
     },
 
     {
         x: noisyTestData.map(point => point.x),
-
         y: noisyTestData.map(point => point.y),
-
         mode: "markers",
-
         type: "scatter",
-
         name: "Testdaten"
     }
 

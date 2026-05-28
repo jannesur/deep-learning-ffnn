@@ -12,6 +12,10 @@ main {
     margin-top: 40px;
 }
 
+section {
+    margin-bottom: 60px;
+}
+
 .plot-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -20,21 +24,19 @@ main {
 
 #dataset-plot,
 #noisy-dataset-plot,
-#prediction-plot,
 #clean-train-prediction-plot,
-#clean-test-prediction-plot {
-
+#clean-test-prediction-plot,
+#best-fit-train-prediction-plot,
+#best-fit-test-prediction-plot,
+#overfit-train-prediction-plot,
+#overfit-test-prediction-plot {
     width: 100%;
     height: 500px;
     background: white;
 }
 
-#loss-output,
-#clean-loss-output {
-
+.loss-output {
     margin-top: 20px;
-
     padding: 16px;
-
     background: white;
 }
