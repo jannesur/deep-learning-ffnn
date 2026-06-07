@@ -310,7 +310,7 @@ function plotLossHistory(plotId, lossHistory, title) {
 }
 
 
-// Kleine Hilfsfunktion: Loss-Plot-Div erstellen, falls es noch nicht existiert
+// Hilfsfunktion: Loss-Plot-Div erstellen, falls es noch nicht existiert
 
 function createLossPlotDivIfNeeded(parentId, plotId) {
 
@@ -445,7 +445,7 @@ async function trainModels() {
         calculateLoss(overfitModel, testInputs, testLabels).toFixed(6);
 
 
-    // Loss-Verlauf zusätzlich visualisieren
+    // Loss-Verlauf visualisieren
 
     createLossPlotDivIfNeeded("clean-loss-output", "clean-loss-plot");
     createLossPlotDivIfNeeded("bestfit-loss-output", "bestfit-loss-plot");
@@ -470,7 +470,7 @@ async function trainModels() {
     );
 
 
-    // Rote Trainingshinweise ausblenden
+    // Rote Trainingshinweise
 
     const trainingStatusTexts = document.querySelectorAll(".training-status");
 
